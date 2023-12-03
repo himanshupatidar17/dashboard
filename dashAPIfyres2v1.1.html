@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fyers API Integration - Redirect Page</title>
+</head>
+<body>
+
+    <script>
+        // Function to validate auth code and obtain access token
+        function validateAuthCode() {
+            // Get the auth code from the URL query parameters
+            const queryParams = new URLSearchParams(window.location.search);
+            const authCode = queryParams.get('code');
+
+            if (!authCode) {
+                console.error('Auth code not found in URL parameters.');
+                return;
+            }
+
+            // Generate a random code_verifier (you may implement this logic)
+            const codeVerifier = generateRandomCodeVerifier();
+
+            const apiUrl = 'https://api-t1.fyers.in/api/v3/validate-authcode';
+
+            // Make a POST request to validate the auth code
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    grant_type: 'authorization_code',
+                    code_verifier: codeVerifier,
+                    code: authCode,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response data
+                console.log('Response:', data);
+
+                if (data.s === 'ok') {
+                    // Auth code validated successfully, use access_token for subsequent requests
+                    const accessToken = data.access_token;
+                    console.log('Access Token:', accessToken);
+
+                    // You can now use the accessToken for your subsequent API requests
+                    // For example, call another function to perform actions with the access token
+                    performActionsWithAccessToken(accessToken);
+                } else {
+                    // Handle error response
+                    console.error('Error:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // Example function to perform actions with the obtained access token
+        function performActionsWithAccessToken(accessToken) {
+            // Implement your logic here using the access token
+            console.log('Performing actions with Access Token:', accessToken);
+            // You can redirect the user or perform any other necessary actions on this page
+        }
+
+        // Function to generate a random code_verifier (you need to implement this logic)
+        function generateRandomCodeVerifier() {
+            // Implement your logic to generate a random string
+            // For example, you can use the following line:
+            return Math.random().toString(36).substring(2);
+        }
+
+        // Call the validateAuthCode function on page load
+        validateAuthCode();
+    </script>
+
+</body>
+</html>

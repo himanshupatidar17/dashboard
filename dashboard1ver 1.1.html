@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Multi-Select Dropdown with Checkboxes</title>
+    <style>
+        /* Add some styling for better visibility */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .checkbox-option input {
+            margin-right: 5px;
+        }
+
+        #selectedOptionsContainer {
+            margin-top: 20px;
+        }
+
+        .selected-option {
+            margin-bottom: 10px;
+        }
+
+        .additional-input {
+            margin-right: 5px;
+        }
+
+        #outputContainer {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<label for="inputX">Enter value for x:</label>
+<input type="text" id="inputX">
+
+<label for="inputA">Enter value for a:</label>
+<input type="text" id="inputA">
+
+<label for="securityType">Enter security type:</label>
+<input type="text" id="securityType" placeholder="E.g., BANKNIFTY">
+
+<label for="expiryMonth">Enter expiry month (MM):</label>
+<input type="text" id="expiryMonth" placeholder="E.g., 06">
+
+<label for="expiryDate">Enter expiry date (DD):</label>
+<input type="text" id="expiryDate" placeholder="E.g., 23">
+
+
+
+<label for="checkboxOptions">Generated Options:</label>
+<div id="checkboxOptions"></div>
+
+<button onclick="insertSelectedOptions()">Insert Selected Options</button>
+
+<div id="selectedOptionsContainer">
+    <!-- Selected options and input boxes will be inserted here -->
+</div>
+
+<button onclick="buyOrSell('BUY')">Buy</button>
+<button onclick="buyOrSell('SELL')">Sell</button>
+
+<div id="outputContainer">
+    <!-- Output will be displayed here -->
+</div>
+
+<script>
+    function generateOptions() {
+        const inputX = parseFloat(document.getElementById('inputX').value) || 0;
+        const inputA = parseFloat(document.getElementById('inputA').value) || 0;
+        const checkboxOptions = document.getElementById('checkboxOptions');
+
+        // Clear previous options
+        checkboxOptions.innerHTML = '';
+
+        // Define the options
+        const results = [
+            inputX - 3 * inputA,
+            inputX - 2 * inputA,
+            inputX - inputA,
+            inputX,
+            inputX + inputA,
+            inputX + 2 * inputA,
+            inputX + 3 * inputA
+        ];
+
+        // Create checkboxes and labels for each result
+        results.forEach(result => {
+            const div = document.createElement('div');
+            div.classList.add('checkbox-option');
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = result;
+            checkbox.id = result; // Use the result as the id
+            div.appendChild(checkbox);
+
+            const label = document.createElement('label');
+            label.textContent = result;
+            label.setAttribute('for', checkbox.id);
+            div.appendChild(label);
+
+            checkboxOptions.appendChild(div);
+        });
+    }
+
+    function insertSelectedOptions() {
+        const checkboxOptions = document.getElementById('checkboxOptions');
+        const selectedOptionsContainer = document.getElementById('selectedOptionsContainer');
+
+        // Clear previous selected options
+        selectedOptionsContainer.innerHTML = '';
+
+        // Find selected checkboxes and insert corresponding options with input boxes
+        Array.from(checkboxOptions.querySelectorAll('input[type="checkbox"]:checked')).forEach(checkbox => {
+            const selectedOptionDiv = document.createElement('div');
+            selectedOptionDiv.classList.add('selected-option');
+
+            const selectedOption = document.createElement('span');
+            selectedOption.textContent = checkbox.value;
+            selectedOptionDiv.appendChild(selectedOption);
+
+            const priceInput = document.createElement('input');
+            priceInput.type = 'text';
+            priceInput.placeholder = 'Enter price';
+            priceInput.classList.add('additional-input');
+            selectedOptionDiv.appendChild(priceInput);
+
+            const additionalInput = document.createElement('input');
+            additionalInput.type = 'text';
+            additionalInput.placeholder = 'Enter additional data';
+            additionalInput.classList.add('additional-input');
+            selectedOptionDiv.appendChild(additionalInput);
+
+            selectedOptionsContainer.appendChild(selectedOptionDiv);
+        });
+    }
+
+    function buyOrSell(transactionType) {
+        const selectedOptionsContainer = document.getElementById('selectedOptionsContainer');
+        const outputContainer = document.getElementById('outputContainer');
+        const securityType = document.getElementById('securityType').value || 'BANKNIFTY';
+        const expiryMonth = document.getElementById('expiryMonth').value || '06';
+        const expiryDate = document.getElementById('expiryDate').value || '01'; // Default to the 1st if not provided
+
+        // Clear previous output
+        outputContainer.innerHTML = '';
+
+        // Display selected options and corresponding amounts in the specified format
+        Array.from(selectedOptionsContainer.querySelectorAll('.selected-option')).forEach(selectedOptionDiv => {
+            const selectedOption = selectedOptionDiv.querySelector('span').textContent;
+            const priceInput = selectedOptionDiv.querySelector('.additional-input');
+            const additionalInput = selectedOptionDiv.querySelectorAll('.additional-input')[1].value || 'No additional data';
+            
+
+            const outputDiv = document.createElement('div');
+            outputDiv.textContent = `kite.place_order(variety="regular", exchange="NSE", tradingsymbol="${securityType}:${selectedOption}23${expiryMonth}${expiryDate}${price}CE", transaction_type="${transactionType}", quantity=1, product="NRML", order_type="MARKET") `;
+            outputContainer.appendChild(outputDiv);
+        });
+    }
+
+    // Call the function initially and whenever inputs change
+    document.getElementById('inputX').addEventListener('input', generateOptions);
+    document.getElementById('inputA').addEventListener('input', generateOptions);
+
+    generateOptions(); // Call initially
+</script>
+
+</body>
+</html>

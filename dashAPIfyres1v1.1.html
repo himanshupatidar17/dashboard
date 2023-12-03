@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fyers API Integration</title>
+</head>
+<body>
+
+    <button onclick="initiateLogin()">Login</button>
+
+    <script>
+        // Function to initiate Fyers login
+        function initiateLogin() {
+            const clientId = '70J3JV6ABJ-100';
+            const redirectUri = encodeURIComponent('file:///Users/himanshupatidar/Desktop/dashboard/dashAPIfyres2v1.1.html');
+            const responseType = 'code';
+
+            // Generate a random code_verifier (you may implement this logic)
+            const codeVerifier = generateRandomCodeVerifier();
+
+            // Calculate SHA256 hash of the code_verifier as code_challenge
+            const codeChallenge = sha256(codeVerifier);
+
+            // Generate a random state value
+            const state = 'abcdefg';
+
+            const loginEndpoint = `https://api-t1.fyers.in/api/v3/generate-authcode?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=${responseType}&code_challenge=${codeChallenge}&state=${state}`;
+
+            // Redirect the user to the Fyers login page
+            window.location.href = loginEndpoint;
+        }
+
+        // Function to generate a random code_verifier (you need to implement this logic)
+        function generateRandomCodeVerifier() {
+            // Implement your logic to generate a random string
+            // For example, you can use the following line:
+            return Math.random().toString(36).substring(2);
+        }
+
+        // Function to calculate SHA256 hash (you can use a library for this)
+        function sha256(plain) {
+            // Implement your SHA256 logic here
+            // This is a simplified example, you may want to use a library
+            return plain; // Replace this with actual implementation
+        }
+    </script>
+
+</body>
+</html>
